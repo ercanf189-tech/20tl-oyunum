@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0f172a" />
+  <title>20 TL'ye En İyisini Kur!</title>
+  <link rel="manifest" href="manifest.json" />
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --primary: #3b82f6;
+      --accent: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 16px; }
+    .container { width: 100%; max-width: 600px; }
+    h1 { text-align: center; font-size: 1.7rem; margin-bottom: 6px; background: linear-gradient(90deg, #38bdf8, #34d399); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .subtitle { text-align: center; color: var(--muted); font-size: 0.9rem; margin-bottom: 20px; }
+    .card-box { background: var(--card); border-radius: 16px; padding: 18px; margin-bottom: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+    .mode-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+    button { border: none; border-radius: 12px; padding: 14px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: transform 0.1s, opacity 0.2s; color: white; }
+    button:active { transform: scale(0.97); }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn-primary { background: var(--primary); }
+    .btn-accent { background: var(--accent); }
+    .btn-warning { background: var(--warning); color: #0f172a; }
+    .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--text); }
+    .btn-outline.active { background: var(--primary); }
+    .cat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .cat-btn { background: #273549; text-align: left; padding: 12px; border: 2px solid transparent; display: flex; align-items: center; gap: 10px; font-size: 0.92rem; }
+    .cat-btn.selected { border-color: var(--accent); background: rgba(16, 185, 129, 0.15); }
+    .cat-icon { font-size: 1.5rem; }
+    .hud { display: flex; justify-content: space-between; align-items: center; background: #0b1120; padding: 12px 16px; border-radius: 12px; margin-bottom: 14px; border: 1px solid #1e293b; position: sticky; top: 8px; z-index: 10; }
+    .budget-badge { font-size: 1.25rem; font-weight: 800; color: var(--accent); }
+    .budget-badge.low { color: var(--danger); }
+    .items-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+    .item-card { background: var(--card); border: 2px solid #334155; border-radius: 14px; padding: 12px; cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; transition: all 0.15s; user-select: none; }
+    .item-card.picked { border-color: var(--accent); background: rgba(16, 185, 129, 0.18); }
+    .item-card.unaffordable { opacity: 0.4; }
+    .item-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .item-emoji { font-size: 1.6rem; }
+    .item-price { background: #0f172a; color: var(--warning); font-weight: 800; padding: 3px 8px; border-radius: 8px; font-size: 0.85rem; }
+    .item-name { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; }
+    .item-desc { font-size: 0.75rem; color: var(--muted); }
+    .hidden { display: none !important; }
+    .pass-screen { text-align: center; padding: 40px 20px; }
+    .pass-screen h2 { font-size: 1.6rem; margin-bottom: 12px; color: var(--warning); }
+    .result-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
+    .res-box { background: #0f172a; padding: 12px; border-radius: 12px; border: 1px solid #334155; }
+    .res-box.winner { border: 2px solid var(--accent); box-shadow: 0 0 15px rgba(16,185,129,0.25); }
+    .res-list { list-style: none; margin-top: 8px; font-size: 0.85rem; }
+    .res-list li { padding: 4px 0; border-bottom: 1px solid #1e293b; display: flex; justify-content: space-between; }
+    .bonus-tag { background: rgba(245, 158, 11, 0.2); color: var(--warning); font-size: 0.78rem; padding: 4px 8px; border-radius: 6px; margin-top: 8px; display: inline-block; }
+    .winner-banner { text-align: center; font-size: 1.4rem; font-weight: 800; padding: 12px; border-radius: 12px; background: rgba(16, 185, 129, 0.2); color: #34d399; margin-bottom: 12px; }
+    @media (max-width: 420px) { .items-grid, .cat-grid, .result-cols { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>💸 20 TL'ye En İyisini Kur!</h1>
+    <p class="subtitle">Bütçeni aşmadan en güçlü kadroyu kur, rakibini yen!</p>
+
+    <div id="menu-screen" class="card-box">
+      <h3 style="margin-bottom:10px; font-size:1rem;">1. Oyun Modu Seç</h3>
+      <div class="mode-btns">
+        <button id="mode-ai" class="btn-outline active" onclick="setMode('ai')">🤖 Bilgisayara Karşı</button>
+        <button id="mode-pvp" class="btn-outline" onclick="setMode('pvp')">👥 2 Kişilik (Aynı Cihaz)</button>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <h3 style="font-size:1rem;">2. Kategori Seç (10 Kategori)</h3>
+        <button class="btn-warning" style="padding:6px 10px; font-size:0.8rem;" onclick="randomCategory()">🎲 Rastgele</button>
+      </div>
+      <div id="category-list" class="cat-grid"></div>
+
+      <button class="btn-accent" style="width:100%; margin-top:16px; font-size:1.1rem;" onclick="startGame()">🚀 Oyunu Başlat</button>
+    </div>
+
+    <div id="game-screen" class="hidden">
+      <div class="hud">
+        <div>
+          <div id="player-turn-label" style="font-weight:800; font-size:1rem;">1. Oyuncu Sırası</div>
+          <div id="category-title-hud" style="font-size:0.8rem; color:var(--muted);">Kategori</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:0.75rem; color:var(--muted);">Kalan Bütçe</div>
+          <div id="budget-display" class="budget-badge">20 TL</div>
+        </div>
+      </div>
+
+      <p id="synergy-hint" style="font-size:0.8rem; color:var(--warning); margin-bottom:10px; text-align:center;"></p>
+      <div id="items-container" class="items-grid"></div>
+
+      <div style="display:flex; gap:10px;">
+        <button class="btn-outline" style="flex:1;" onclick="resetSelection()">🔄 Sıfırla</button>
+        <button id="confirm-btn" class="btn-accent" style="flex:2;" onclick="confirmTurn()">✅ Seçimi Onayla</button>
+      </div>
+    </div>
+
+    <div id="pass-screen" class="card-box pass-screen hidden">
+      <h2>🙈 Sıra 2. Oyuncuda!</h2>
+      <p style="color:var(--muted); margin-bottom:24px;">1. Oyuncu seçimini tamamladı. Seçimlerin görünmemesi için cihazı 2. Oyuncuya verin.</p>
+      <button class="btn-primary" style="width:100%;" onclick="startPlayer2()">2. Oyuncu Hazır, Başla! ▶️</button>
+    </div>
+
+    <div id="result-screen" class="card-box hidden">
+      <div id="winner-banner" class="winner-banner"></div>
+      <div class="result-cols">
+        <div id="p1-res-box" class="res-box">
+          <h4 id="p1-res-title">1. Oyuncu</h4>
+          <div id="p1-score" style="font-size:1.3rem; font-weight:800; color:var(--accent); margin:4px 0;">0 Puan</div>
+          <div id="p1-spent" style="font-size:0.75rem; color:var(--muted);">Harcanan: 0 TL</div>
+          <div id="p1-bonus"></div>
+          <ul id="p1-list" class="res-list"></ul>
+        </div>
+        <div id="p2-res-box" class="res-box">
+          <h4 id="p2-res-title">Rakip</h4>
+          <div id="p2-score" style="font-size:1.3rem; font-weight:800; color:var(--accent); margin:4px 0;">0 Puan</div>
+          <div id="p2-spent" style="font-size:0.75rem; color:var(--muted);">Harcanan: 0 TL</div>
+          <div id="p2-bonus"></div>
+          <ul id="p2-list" class="res-list"></ul>
+        </div>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+        <button class="btn-primary" onclick="startGame()">🔁 Aynı Kategoride Tekrar</button>
+        <button class="btn-outline" onclick="backToMenu()">🏠 Kategori Değiştir</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const CATEGORIES = [
+      {
+        id: "futbol",
+        name: "Futbol Rüya Kadrosu",
+        icon: "⚽",
+        hint: "İpucu: Süper Yıldız + Efsane Teknik Direktör uyumu ekstra +15 puan verir!",
+        synergy: { pair: ["yildiz", "hoca"], bonus: 15, text: "Taktik Deha Bonusu (+15)" },
+        items: [
+          { id: "yildiz", name: "Süper Yıldız Forvet", price: 8, power: 36, emoji: "🐐", desc: "Maç kazandıran golcü" },
+          { id: "kaleci", name: "Duvar Kaleci", price: 5, power: 23, emoji: "🧤", desc: "Kalesini gole kapatır" },
+          { id: "hoca", name: "Efsane Teknik Direktör", price: 5, power: 22, emoji: "👔", desc: "Kusursuz oyun planı" },
+          { id: "ortasaha", name: "Maestro Orta Saha", price: 6, power: 27, emoji: "🎯", desc: "Asist makinesi" },
+          { id: "stoper", name: "Kaya Gibi Stoper", price: 4, power: 18, emoji: "🛡️", desc: "Geçit vermez savunma" },
+          { id: "kanat", name: "Hızlı Kanat Oyuncusu", price: 4, power: 17, emoji: "⚡", desc: "Kontra atak silahı" },
+          { id: "taraftar", name: "Ateşli Taraftar Grubu", price: 3, power: 13, emoji: "🔥", desc: "12. adam baskısı" },
+          { id: "genc", name: "Altyapı Yeteneği", price: 2, power: 9, emoji: "🌟", desc: "Dinamik genç enerji" },
+          { id: "saglik", name: "Süper Sağlık Ekibi", price: 2, power: 8, emoji: "🩺", desc: "Sakatlık önleyici" },
+          { id: "saha", name: "Kusursuz Zemin", price: 1, power: 4, emoji: "🏟️", desc: "Pas oyununa uygun" }
+{
+  "name": "20 TL'ye En İyisini Kur",
+  "short_name": "20 TL Oyunu",
+  "description": "10 farklı kategoride 20 TL bütçe ile en iyi kadroyu kurma oyunu.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "orientation": "portrait"
+}
+const CACHE_NAME = "20tl-oyunu-v1";
+const ASSETS = ["./", "./index.html", "./manifest.json"];
+
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
+  );
+  self.skipWaiting();
+});
+
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    caches.keys().then((keys) =>
+      Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
+    )
+  );
+  self.clients.claim();
+});
+
+self.addEventListener("fetch", (event) => {
+  event.respondWith(
+    caches.match(event.request).then((cached) => cached || fetch(event.request))
+  );
+});
